@@ -89,25 +89,9 @@ export function getAllIconNames(): string[] {
  * @param packPrefix Filter by specific icon pack prefix (optional)
  */
 export function searchIcons(searchTerm: string, limit?: number, packPrefix?: string): string[] {
-  let lowerSearchTerm = searchTerm.toLowerCase();
+  const trimmed = searchTerm.trim();
+  const lowerSearchTerm = trimmed.toLowerCase();
   let results: string[] = [];
-  
-  // Check if the search term starts with a specific prefix (like "Gr")
-  if (searchTerm && !packPrefix) {
-    // Look for a prefix match at the beginning of the search term
-    const matchingPrefix = Object.keys(iconPacks).find(prefix => 
-      searchTerm.startsWith(prefix) || 
-      lowerSearchTerm.startsWith(prefix.toLowerCase())
-    );
-    
-    if (matchingPrefix) {
-      // If we found a matching prefix, set it as the packPrefix and remove it from the search term
-      packPrefix = matchingPrefix;
-      searchTerm = searchTerm.substring(matchingPrefix.length);
-      // Update lowercase search term
-      lowerSearchTerm = searchTerm.toLowerCase();
-    }
-  }
   
   // If a specific pack is specified, use it regardless of search term
   if (packPrefix && iconPacks[packPrefix]) {
@@ -116,10 +100,11 @@ export function searchIcons(searchTerm: string, limit?: number, packPrefix?: str
       .filter(key => 
         typeof pack[key] === 'function' && 
         !key.startsWith('__') &&
-        (!searchTerm || key.toLowerCase().includes(lowerSearchTerm))
+        (!trimmed || key.toLowerCase().includes(lowerSearchTerm))
       );
-  } else if (searchTerm) {
+  } else if (trimmed) {
     // If no pack specified but search term exists, search across all packs
+    const seen = new Set<string>();
     Object.entries(iconPacks).forEach(([prefix, pack]) => {
       const packResults = Object.keys(pack)
         .filter(key => 
@@ -127,11 +112,31 @@ export function searchIcons(searchTerm: string, limit?: number, packPrefix?: str
           !key.startsWith('__') &&
           key.toLowerCase().includes(lowerSearchTerm)
         );
-      results = results.concat(packResults);
+      packResults.forEach(icon => {
+        if (!seen.has(icon)) {
+          seen.add(icon);
+          results.push(icon);
+        }
+      });
     });
   } else {
     // Empty search with no specific pack - return empty array as we should show defaults
     return [];
+  }
+  
+  // Sort by relevance: exact suffix match first (e.g. FaSlack for "slack"), then earlier match, then shorter names
+  if (trimmed && results.length > 0) {
+    results.sort((a, b) => {
+      const aLower = a.toLowerCase();
+      const bLower = b.toLowerCase();
+      const aSuffix = aLower.endsWith(lowerSearchTerm) ? 0 : 1;
+      const bSuffix = bLower.endsWith(lowerSearchTerm) ? 0 : 1;
+      if (aSuffix !== bSuffix) return aSuffix - bSuffix;
+      const aIdx = aLower.indexOf(lowerSearchTerm);
+      const bIdx = bLower.indexOf(lowerSearchTerm);
+      if (aIdx !== bIdx) return aIdx - bIdx;
+      return a.length - b.length;
+    });
   }
   
   return limit ? results.slice(0, limit) : results;

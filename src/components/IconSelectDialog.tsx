@@ -21,7 +21,7 @@ export const IconSelectDialog: React.FC<IconSelectDialogProps> = ({
   iconOptions,
   isOpen,
   onClose,
-  maxResults = 12, // Default to 12 results
+  maxResults = 48, // Default to 48 results (4x12 grid)
   defaultIconOptions = DEFAULT_ICON_OPTIONS,
   darkMode = false,
   showLibrarySelection = true // Default to showing library selection
@@ -237,7 +237,7 @@ export const IconSelectDialog: React.FC<IconSelectDialogProps> = ({
               Loading icons...
             </div>
           ) : filteredIcons.length > 0 ? (
-            filteredIcons.map((icon) => (
+            Array.from(new Set(filteredIcons)).map((icon) => (
               <button
                 key={icon}
                 type="button"
