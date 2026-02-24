@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.8](https://github.com/Walter0697/react-icons-select/compare/v0.1.7...v0.1.8) (2026-02-24)
+
+
+### Bug Fixes
+
+* add repository URL to package.json for npm provenance validation ([3370a42](https://github.com/Walter0697/react-icons-select/commit/3370a428f7c83deda441d144ead016441b3238ae))
+
 ### [0.1.7](https://github.com/Walter0697/react-icons-select/compare/v0.1.6...v0.1.7) (2026-02-24)
 
 ### [0.1.6](https://github.com/Walter0697/react-icons-select/compare/v0.1.5...v0.1.6) (2026-02-24)
