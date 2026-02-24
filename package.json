@@ -1,7 +1,7 @@
 {
   "name": "react-icons-select",
   "author": "Walter Cheng",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "A React library for selecting icons",
   "license": "MIT",
   "main": "dist/cjs/index.js",
